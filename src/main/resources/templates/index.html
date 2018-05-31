@@ -1,0 +1,116 @@
+<!--
+
+
+     2016 (c) IxorTalk CVBA
+     All Rights Reserved.
+
+    NOTICE:  All information contained herein is, and remains
+    the property of IxorTalk CVBA
+
+    The intellectual and technical concepts contained
+    herein are proprietary to IxorTalk CVBA
+    and may be covered by U.S. and Foreign Patents,
+    patents in process, and are protected by trade secret or copyright law.
+
+    Dissemination of this information or reproduction of this material
+    is strictly forbidden unless prior written permission is obtained
+    from IxorTalk CVBA.
+
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on an
+    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+    KIND, either express or implied.
+
+-->
+<!DOCTYPE HTML>
+<!--
+	Strongly Typed by HTML5 UP
+	html5up.net | @n33co
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title th:text="${gateway.title}"></title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<link rel="stylesheet" th:href="@{/css/all.css}"/>
+	</head>
+	<body class="homepage">
+		<div id="page-wrapper">
+
+
+			<!-- Features -->
+				<div id="features-wrapper">
+					<section id="features" class="container">
+						<header>
+							<img th:src="${gateway.logo}" />
+							<h2 th:text="${gateway.welcomeText}"></h2>
+							<nav id="nav">
+								<ul>
+									<li class="current"><a id="login_text" href="index.html">Welcome</a></li>
+									<li><a href="/logout" id="login_button" class="button special">Sign Up</a></li>
+								</ul>
+							</nav>
+						</header>
+
+						<div th:if="${gateway.modules.values().size() > 0}">
+							<div class="row" th:each="index: ${#numbers.sequence(0, gateway.modules.values().size(), 3)}">
+
+								<div th:if="${gateway.modules.values().size() &gt; index}" class="4u 12u(mobile)">
+
+									<section>
+										<a class="image featured" th:href="${gateway.modules.values()[index].url}"><img th:src="${gateway.modules.values()[index].image}" alt="" /></a>
+										<header>
+											<h3 th:text="${gateway.modules.values()[index].name}"></h3>
+										</header>
+										<p th:text="${gateway.modules.values()[index].description}"></p>
+									</section>
+
+								</div>
+
+								<div th:if="${gateway.modules.values().size() &gt; index+1}" class="4u 12u(mobile)">
+
+									<section>
+										<a class="image featured" th:href="${gateway.modules.values()[index + 1].url}"><img th:src="${gateway.modules.values()[index + 1].image}" alt="" /></a>
+										<header>
+											<h3 th:text="${gateway.modules.values()[index + 1].name}"></h3>
+										</header>
+										<p th:text="${gateway.modules.values()[index + 1].description}"></p>
+									</section>
+
+								</div>
+
+								<div th:if="${gateway.modules.values().size() &gt; index+2}" class="4u 12u(mobile)">
+
+									<section>
+										<a class="image featured" th:href="${gateway.modules.values()[index + 2].url}"><img th:src="${gateway.modules.values()[index + 2].image}" alt="" /></a>
+										<header>
+											<h3 th:text="${gateway.modules.values()[index + 2].name}"></h3>
+										</header>
+										<p th:text="${gateway.modules.values()[index + 2].description}"></p>
+									</section>
+
+								</div>
+
+							</div>
+							</div>
+
+						</section>
+					</div>
+				
+
+			<!-- Footer -->
+				<div id="footer-wrapper">
+					<div id="copyright" class="container">
+						<ul class="links">
+							<li th:text="${gateway.copyright}"></li>
+						</ul>
+					</div>
+				</div>
+
+		</div>
+
+		<script th:src="@{/script/all.js}"></script>
+
+	</body>
+</html>
