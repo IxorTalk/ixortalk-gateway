@@ -41,7 +41,7 @@
 
 	<name>ixortalk-gateway</name>
 	<description>IxorTalk Oauth2 supported Zuul Proxy Server (Gateway)</description>
-	<url>https://github.com/ixortalkadmin/ixortalk-gateway/tree/master</url>
+	<url>https://github.com/ixortalk/ixortalk-gateway/tree/master</url>
 
 	<organization>
 		<name>IxorTalk CVBA</name>
@@ -78,7 +78,7 @@
 	<scm>
 		<connection>scm:git:git@github.com:ixortalkadmin/ixortalk-gateway.git</connection>
 		<developerConnection>scm:git:git@github.com:ixortalkadmin/ixortalk-gateway.git</developerConnection>
-		<url>https://github.com/ixortalkadmin/ixortalk-gateway/tree/master</url>
+		<url>https://github.com/ixortalk/ixortalk-gateway/tree/master</url>
 		<tag>HEAD</tag>
 	</scm>
 
