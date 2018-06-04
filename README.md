@@ -4,22 +4,22 @@
 
 IxorTalk is an open source IoT-platform.  It is a microservice architecture, built using Spring Cloud, providing various features like asset management, monitoring, dashboarding, alerting, centralized configuration, user management, ... 
 
-An IxorTalk instance is highly configurable through the use of Spring Cloud Config, see [ixortalk.config.demo](https://github.com/ixortalk/ixortalk.config.demo) for an example configuration.
+An IxorTalk instance is highly configurable through the use of Spring Cloud Config, see [ixortalk.config.demo](../ixortalk.config.demo) for an example configuration.
 
 ### Microservices available
 
-* [ixortalk-config-server](https://github.com/ixortalk/ixortalk-config-server)
-* [ixortalk-gateway](https://github.com/ixortalk/ixortalk-gateway)
-* [ixortalk-authserver](https://github.com/ixortalk/ixortalk-authserver)
-* [ixortalk-assetmgmt](https://github.com/ixortalk/ixortalk-assetmgmt)
-* [ixortalk-assetstate](https://github.com/ixortalk/ixortalk-assetstate)
-* [ixortalk-mailing-service](https://github.com/ixortalk/ixortalk-mailing-service)
-* [ixortalk-nginx-docker-proxy](https://github.com/ixortalk/ixortalk-nginx-docker-proxy)
-* [ixortalk-mongodb](https://github.com/ixortalk/ixortalk-mongodb)
-* [ixortalk-alertmanager](https://github.com/ixortalk/ixortalk-alertmanager)
-* [ixortalk-prometheus](https://github.com/ixortalk/ixortalk-prometheus)
-* [ixortalk-blackbox-exporter](https://github.com/ixortalk/ixortalk-blackbox-exporter)
-* [ixortalk-grafana](https://github.com/ixortalk/ixortalk-grafana)
+* [ixortalk-config-server](../ixortalk-config-server)
+* [ixortalk-gateway](../ixortalk-gateway)
+* [ixortalk-authserver](../ixortalk-authserver)
+* [ixortalk-assetmgmt](../ixortalk-assetmgmt)
+* [ixortalk-assetstate](../ixortalk-assetstate)
+* [ixortalk-mailing-service](../ixortalk-mailing-service)
+* [ixortalk-nginx-docker-proxy](../ixortalk-nginx-docker-proxy)
+* [ixortalk-mongodb](../ixortalk-mongodb)
+* [ixortalk-alertmanager](../ixortalk-alertmanager)
+* [ixortalk-prometheus](../ixortalk-prometheus)
+* [ixortalk-blackbox-exporter](../ixortalk-blackbox-exporter)
+* [ixortalk-grafana](../ixortalk-grafana)
 
 ### IxorTalk Gateway 
 
@@ -41,7 +41,7 @@ $ mvn clean install -DskipDocker
 
 ## Running
 
-For easy bootstrapping an IxorTalk instance, see [ixortalk-config-docker](https://github.com/ixortalk/ixortalk-config-docker) which contains a Docker compose configuration for the complete stack.
+For easy bootstrapping an IxorTalk instance, see [ixortalk-config-docker](../ixortalk-config-docker) which contains a Docker compose configuration for the complete stack.
 
 ## Contributing
 
