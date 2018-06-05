@@ -12,6 +12,7 @@ An IxorTalk instance is highly configurable through the use of Spring Cloud Conf
 * [ixortalk-gateway](https://github.com/ixortalk/ixortalk-gateway)
 * [ixortalk-authserver](https://github.com/ixortalk/ixortalk-authserver)
 * [ixortalk-assetmgmt](https://github.com/ixortalk/ixortalk-assetmgmt)
+* [ixortalk-assetmgmt-ui](https://github.com/ixortalk/ixortalk-assetmgmt-ui)
 * [ixortalk-assetstate](https://github.com/ixortalk/ixortalk-assetstate)
 * [ixortalk-mailing-service](https://github.com/ixortalk/ixortalk-mailing-service)
 * [ixortalk-nginx-docker-proxy](https://github.com/ixortalk/ixortalk-nginx-docker-proxy)
