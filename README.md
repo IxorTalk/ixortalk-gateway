@@ -4,6 +4,8 @@
 
 IxorTalk is an open source IoT-platform.  It is a microservice architecture, built using Spring Cloud, providing various features like asset management, monitoring, dashboarding, alerting, centralized configuration, user management, ... 
 
+![](./docs/highlevel-architecture.png)
+
 An IxorTalk instance is highly configurable through the use of Spring Cloud Config, see [ixortalk.config.demo](https://github.com/ixortalk/ixortalk.config.demo) for an example configuration.
 
 ### Microservices available
