@@ -23,23 +23,61 @@
  */
 package com.ixortalk.gateway.web;
 
+import java.util.Map;
+
+import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
+
 import com.ixortalk.gateway.security.IxorTalkProperties;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import javax.inject.Inject;
+import static java.util.Arrays.stream;
+import static java.util.stream.Collectors.toList;
 
 @Controller
 public class IndexController {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(IndexController.class);
 
     @Inject
     private IxorTalkProperties ixorTalkProperties;
 
     @RequestMapping({"/index.html","/"})
-    public String index(Model model) {
-        model.addAttribute("gateway", ixorTalkProperties.getGateway());
+    public String index(Model model, HttpServletRequest request) {
+        model.addAttribute(
+                "indexDTO",
+                new IndexDTO(
+                        ixorTalkProperties.getGateway().getTitle(),
+                        ixorTalkProperties.getGateway().getLogo(),
+                        ixorTalkProperties.getGateway().getWelcomeText(),
+                        ixorTalkProperties.getGateway().getNoModulesText(),
+                        ixorTalkProperties.getGateway().getCopyright(),
+                        ixorTalkProperties.getGateway().getModules()
+                                .entrySet()
+                                .stream()
+                                .filter(moduleEntry -> showForRole(moduleEntry.getKey(), request))
+                                .map(Map.Entry::getValue)
+                                .map(module -> new IndexDTO.Module(
+                                        module.getName(),
+                                        module.getUrl(),
+                                        module.getImage(),
+                                        module.getDescription()))
+                                .collect(toList())));
         return "index";
+    }
+
+    private boolean showForRole(String module, HttpServletRequest request) {
+        IxorTalkProperties.Roles roles = ixorTalkProperties.getRoleMatchers().get(module);
+        if (roles == null) {
+            LOGGER.error("No role-matcher configured for landing page module '" + module + "'");
+            throw new AccessDeniedException("Could not construct landing page");
+        }
+        return stream(roles.hasAnyRoleNames()).anyMatch(role -> request.isUserInRole(role));
     }
 
 }

@@ -23,7 +23,10 @@
  */
 package com.ixortalk.gateway;
 
+import javax.inject.Inject;
+
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
+import com.ixortalk.gateway.security.IxorTalkProperties;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -32,14 +35,20 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import javax.inject.Inject;
-
-import static com.github.tomakehurst.wiremock.client.WireMock.*;
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.get;
+import static com.github.tomakehurst.wiremock.client.WireMock.post;
+import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static org.apache.http.HttpStatus.SC_CREATED;
 import static org.apache.http.HttpStatus.SC_OK;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.endsWith;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 
 public class GatewaySecurityIntegrationTest extends AbstractIntegrationTest {
@@ -51,6 +60,9 @@ public class GatewaySecurityIntegrationTest extends AbstractIntegrationTest {
 
     @Inject
     private WebApplicationContext context;
+
+    @Inject
+    private IxorTalkProperties ixorTalkProperties;
 
     private MockMvc mockMvc;
 
@@ -66,7 +78,7 @@ public class GatewaySecurityIntegrationTest extends AbstractIntegrationTest {
                         .withBody(EXPECTED_RESPONSE)
                         .withStatus(SC_OK)));
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/permit-all-module")).andExpect(status().isOk()).andExpect(content().string(EXPECTED_RESPONSE));
+        mockMvc.perform(get("/permit-all-module")).andExpect(status().isOk()).andExpect(content().string(EXPECTED_RESPONSE));
     }
 
     @Test
@@ -77,11 +89,11 @@ public class GatewaySecurityIntegrationTest extends AbstractIntegrationTest {
                         .withBody(EXPECTED_RESPONSE)
                         .withStatus(SC_OK)));
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/has-any-role-module")).andExpect(status().isOk()).andExpect(content().string(EXPECTED_RESPONSE));
+        mockMvc.perform(get("/has-any-role-module")).andExpect(status().isOk()).andExpect(content().string(EXPECTED_RESPONSE));
     }
 
     @Test
-    @WithMockUser(roles = { "USER" })
+    @WithMockUser
     public void hasAnyRole_userDoesNotHaveRequiredRole() throws Exception {
         stubFor(get(urlEqualTo("/has-any-role-module")).willReturn(
                 aResponse()
@@ -89,7 +101,7 @@ public class GatewaySecurityIntegrationTest extends AbstractIntegrationTest {
                         .withStatus(SC_OK)));
 
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/has-any-role-module")).andExpect(status().isForbidden());
+        mockMvc.perform(get("/has-any-role-module")).andExpect(status().isForbidden());
     }
 
     @Test
@@ -103,12 +115,23 @@ public class GatewaySecurityIntegrationTest extends AbstractIntegrationTest {
 
     @Test
     public void permitAllPaths_permitted() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get("/permitAll.html")).andExpect(status().isOk());
+        mockMvc.perform(get("/permitAll.html")).andExpect(status().isOk());
     }
 
     @Test
     public void permitAllPaths_notPermitted() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get("/notPermittedToAll.html")).andExpect(status().isFound()).andExpect(header().string("Location", endsWith("/login")));
+        mockMvc.perform(get("/notPermittedToAll.html")).andExpect(status().isFound()).andExpect(header().string("Location", endsWith("/login")));
     }
 
+    @Test
+    @WithMockUser(roles = { "ADMIN" })
+    public void getIndex_accessToModule() throws Exception {
+        mockMvc.perform(get("/index.html")).andExpect(status().isOk()).andExpect(content().string(containsString("/assetmgmt-ui/index.html")));
+    }
+
+    @Test
+    @WithMockUser
+    public void getIndex_noAccessToModule() throws Exception {
+        mockMvc.perform(get("/index.html")).andExpect(status().isOk()).andExpect(content().string(containsString(ixorTalkProperties.getGateway().getNoModulesText())));
+    }
 }

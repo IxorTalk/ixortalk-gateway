@@ -31,7 +31,7 @@
 -->
 <html>
 	<head>
-		<title th:text="${gateway.title}"></title>
+		<title th:text="${indexDTO.title}"></title>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<link rel="stylesheet" th:href="@{/css/all.css}"/>
@@ -44,8 +44,8 @@
 				<div id="features-wrapper">
 					<section id="features" class="container">
 						<header>
-							<img th:src="${gateway.logo}" />
-							<h2 th:text="${gateway.welcomeText}"></h2>
+							<img th:src="${indexDTO.logo}" />
+							<h2 th:text="${indexDTO.welcomeText}"></h2>
 							<nav id="nav">
 								<ul>
 									<li class="current"><a id="login_text" href="index.html">Welcome</a></li>
@@ -54,57 +54,61 @@
 							</nav>
 						</header>
 
-						<div th:if="${gateway.modules.values().size() > 0}">
-							<div class="row" th:each="index: ${#numbers.sequence(0, gateway.modules.values().size(), 3)}">
+						<div th:if="${indexDTO.modules.size() > 0}">
+							<div class="row" th:each="index: ${#numbers.sequence(0, indexDTO.modules.size(), 3)}">
 
-								<div th:if="${gateway.modules.values().size() &gt; index}" class="4u 12u(mobile)">
+								<div th:if="${indexDTO.modules.size() &gt; index}" class="4u 12u(mobile)">
 
 									<section>
-										<a class="image featured" th:href="${gateway.modules.values()[index].url}"><img th:src="${gateway.modules.values()[index].image}" alt="" /></a>
+										<a class="image featured" th:href="${indexDTO.modules[index].url}"><img th:src="${indexDTO.modules[index].image}" alt="" /></a>
 										<header>
-											<h3 th:text="${gateway.modules.values()[index].name}"></h3>
+											<h3 th:text="${indexDTO.modules[index].name}"></h3>
 										</header>
-										<p th:text="${gateway.modules.values()[index].description}"></p>
+										<p th:text="${indexDTO.modules[index].description}"></p>
 									</section>
 
 								</div>
 
-								<div th:if="${gateway.modules.values().size() &gt; index+1}" class="4u 12u(mobile)">
+								<div th:if="${indexDTO.modules.size() &gt; index+1}" class="4u 12u(mobile)">
 
 									<section>
-										<a class="image featured" th:href="${gateway.modules.values()[index + 1].url}"><img th:src="${gateway.modules.values()[index + 1].image}" alt="" /></a>
+										<a class="image featured" th:href="${indexDTO.modules[index + 1].url}"><img th:src="${indexDTO.modules[index + 1].image}" alt="" /></a>
 										<header>
-											<h3 th:text="${gateway.modules.values()[index + 1].name}"></h3>
+											<h3 th:text="${indexDTO.modules[index + 1].name}"></h3>
 										</header>
-										<p th:text="${gateway.modules.values()[index + 1].description}"></p>
+										<p th:text="${indexDTO.modules[index + 1].description}"></p>
 									</section>
 
 								</div>
 
-								<div th:if="${gateway.modules.values().size() &gt; index+2}" class="4u 12u(mobile)">
+								<div th:if="${indexDTO.modules.size() &gt; index+2}" class="4u 12u(mobile)">
 
 									<section>
-										<a class="image featured" th:href="${gateway.modules.values()[index + 2].url}"><img th:src="${gateway.modules.values()[index + 2].image}" alt="" /></a>
+										<a class="image featured" th:href="${indexDTO.modules[index + 2].url}"><img th:src="${indexDTO.modules[index + 2].image}" alt="" /></a>
 										<header>
-											<h3 th:text="${gateway.modules.values()[index + 2].name}"></h3>
+											<h3 th:text="${indexDTO.modules[index + 2].name}"></h3>
 										</header>
-										<p th:text="${gateway.modules.values()[index + 2].description}"></p>
+										<p th:text="${indexDTO.modules[index + 2].description}"></p>
 									</section>
 
 								</div>
 
 							</div>
-							</div>
+						</div>
 
-						</section>
-					</div>
+						<div th:if="${indexDTO.modules.empty}">
+							<div th:remove="tag" th:utext="${indexDTO.noModulesText}"></div>
+						</div>
+
+					</section>
+				</div>
 				
 
 			<!-- Footer -->
 				<div id="footer-wrapper">
 					<div id="copyright" class="container">
 						<ul class="links">
-							<li th:text="${gateway.copyright}"></li>
+							<li th:text="${indexDTO.copyright}"></li>
 						</ul>
 					</div>
 				</div>
