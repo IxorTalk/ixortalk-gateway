@@ -23,10 +23,10 @@
  */
 package com.ixortalk.gateway.security;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
-
 import java.util.Map;
 import java.util.Set;
+
+import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import static com.google.common.collect.Maps.newHashMap;
 import static com.google.common.collect.Sets.newHashSet;
@@ -100,7 +100,8 @@ public class IxorTalkProperties {
         private String title;
         private String copyright;
         private String logo;
-        private String welcomeText;
+        private String welcomeText = "Welcome to the IxorTalk platform";
+        private String noModulesText = "<h2><i>You don't seem to have access to any IxorTalk module</i></h2>";
 
 
         public Map<String, Module> getModules() {
@@ -146,6 +147,14 @@ public class IxorTalkProperties {
         public Gateway setWelcomeText(String welcomeText) {
             this.welcomeText = welcomeText;
             return this;
+        }
+
+        public String getNoModulesText() {
+            return noModulesText;
+        }
+
+        public void setNoModulesText(String noModulesText) {
+            this.noModulesText = noModulesText;
         }
     }
 
