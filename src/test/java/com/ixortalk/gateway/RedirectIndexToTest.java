@@ -21,23 +21,32 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.ixortalk.gateway.web;
+package com.ixortalk.gateway;
 
-import com.ixortalk.gateway.security.IxorTalkProperties;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.servlet.ModelAndView;
+import org.junit.Test;
+import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.TestPropertySource;
 
 import javax.inject.Inject;
 
-@Controller
-public class IndexController {
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.http.HttpHeaders.LOCATION;
+import static org.springframework.http.HttpStatus.FOUND;
+
+@TestPropertySource(properties = {"ixortalk.gateway.redirect-index-to: " + RedirectIndexToTest.CUSTOM_REDIRECT})
+public class RedirectIndexToTest extends AbstractIntegrationTest {
+
+    public static final String CUSTOM_REDIRECT = "/custom-redirect.html";
 
     @Inject
-    private IxorTalkProperties ixorTalkProperties;
+	private TestRestTemplate template;
 
-    @RequestMapping("/")
-    public ModelAndView index() {
-        return new ModelAndView("redirect:" + ixorTalkProperties.getGateway().getRedirectIndexTo());
-    }
+	@Test
+	public void getIndex() {
+		ResponseEntity<String> response = template.getForEntity("http://localhost:" + port + "/", String.class);
+
+		assertThat(response.getStatusCode()).isEqualTo(FOUND);
+		assertThat(response.getHeaders().getFirst(LOCATION)).isEqualTo("http://localhost:" + port + "" + CUSTOM_REDIRECT);
+	}
 }

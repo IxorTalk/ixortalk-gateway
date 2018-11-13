@@ -23,10 +23,10 @@
  */
 package com.ixortalk.gateway.security;
 
+import org.springframework.boot.context.properties.ConfigurationProperties;
+
 import java.util.Map;
 import java.util.Set;
-
-import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import static com.google.common.collect.Maps.newHashMap;
 import static com.google.common.collect.Sets.newHashSet;
@@ -96,6 +96,7 @@ public class IxorTalkProperties {
     }
 
     public static class Gateway {
+        private String redirectIndexTo = "/landing-page.html";
         private Map<String,Module> modules;
         private String title;
         private String copyright;
@@ -103,6 +104,13 @@ public class IxorTalkProperties {
         private String welcomeText = "Welcome to the IxorTalk platform";
         private String noModulesText = "<h2><i>You don't seem to have access to any IxorTalk module</i></h2>";
 
+        public String getRedirectIndexTo() {
+            return redirectIndexTo;
+        }
+
+        public void setRedirectIndexTo(String redirectIndexTo) {
+            this.redirectIndexTo = redirectIndexTo;
+        }
 
         public Map<String, Module> getModules() {
             return modules;

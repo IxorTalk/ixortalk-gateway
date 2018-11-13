@@ -23,8 +23,6 @@
  */
 package com.ixortalk.gateway;
 
-import javax.inject.Inject;
-
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import com.ixortalk.gateway.security.IxorTalkProperties;
 import org.junit.Before;
@@ -34,6 +32,8 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.web.context.WebApplicationContext;
+
+import javax.inject.Inject;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
@@ -46,9 +46,7 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.endsWith;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 
 public class GatewaySecurityIntegrationTest extends AbstractIntegrationTest {
@@ -125,13 +123,13 @@ public class GatewaySecurityIntegrationTest extends AbstractIntegrationTest {
 
     @Test
     @WithMockUser(roles = { "ADMIN" })
-    public void getIndex_accessToModule() throws Exception {
-        mockMvc.perform(get("/index.html")).andExpect(status().isOk()).andExpect(content().string(containsString("/assetmgmt-ui/index.html")));
+    public void getLandingPage_accessToModule() throws Exception {
+        mockMvc.perform(get("/landing-page.html")).andExpect(status().isOk()).andExpect(content().string(containsString("/assetmgmt-ui/index.html")));
     }
 
     @Test
     @WithMockUser
-    public void getIndex_noAccessToModule() throws Exception {
-        mockMvc.perform(get("/index.html")).andExpect(status().isOk()).andExpect(content().string(containsString(ixorTalkProperties.getGateway().getNoModulesText())));
+    public void getLandingPage_noAccessToModule() throws Exception {
+        mockMvc.perform(get("/landing-page.html")).andExpect(status().isOk()).andExpect(content().string(containsString(ixorTalkProperties.getGateway().getNoModulesText())));
     }
 }

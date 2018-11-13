@@ -23,16 +23,16 @@
  */
 package com.ixortalk.gateway;
 
-import javax.inject.Inject;
-
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.ResponseEntity;
 
+import javax.inject.Inject;
+
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.http.HttpHeaders.LOCATION;
 import static org.springframework.http.HttpStatus.FOUND;
-import static org.springframework.http.HttpStatus.OK;
 
 public class ApplicationTests extends AbstractIntegrationTest {
 
@@ -46,7 +46,8 @@ public class ApplicationTests extends AbstractIntegrationTest {
 	public void homePageLoads() {
 		ResponseEntity<String> response = template.getForEntity("http://localhost:" + port + "/", String.class);
 
-		assertThat(response.getStatusCode()).describedAs(response.toString()).isEqualTo(OK);
+		assertThat(response.getStatusCode()).isEqualTo(FOUND);
+		assertThat(response.getHeaders().getFirst(LOCATION)).isEqualTo("http://localhost:" + port + "/landing-page.html");
 	}
 
 	@Test
@@ -69,9 +70,8 @@ public class ApplicationTests extends AbstractIntegrationTest {
 
 		assertThat(response.getStatusCode()).isEqualTo(FOUND);
 
-		String location = response.getHeaders().getFirst("Location");
-        // authorizeUri has become a true URI and not a URL (auth behind zuul proxy pattern)
-        assertThat(location).describedAs("Wrong location: " + location).startsWith("http://localhost:" + port + authorizeUri);
+		assertThat(response.getHeaders().getFirst(LOCATION))
+				.describedAs("Wrong location: " + response.getHeaders().getFirst(LOCATION))
+				.startsWith("http://localhost:" + port + authorizeUri);
 	}
-
 }

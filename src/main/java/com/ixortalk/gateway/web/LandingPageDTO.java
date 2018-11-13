@@ -25,7 +25,7 @@ package com.ixortalk.gateway.web;
 
 import java.util.List;
 
-public class IndexDTO {
+public class LandingPageDTO {
 
     private String title;
     private String logo;
@@ -34,7 +34,7 @@ public class IndexDTO {
     private String copyright;
     private List<Module> modules;
 
-    public IndexDTO(String title, String logo, String welcomeText, String noModulesText, String copyright, List<Module> modules) {
+    public LandingPageDTO(String title, String logo, String welcomeText, String noModulesText, String copyright, List<Module> modules) {
         this.title = title;
         this.logo = logo;
         this.welcomeText = welcomeText;
