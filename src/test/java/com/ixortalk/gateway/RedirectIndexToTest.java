@@ -24,9 +24,9 @@
 package com.ixortalk.gateway;
 
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.TestPropertySource;
 
 import javax.inject.Inject;
 
@@ -34,52 +34,19 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpHeaders.LOCATION;
 import static org.springframework.http.HttpStatus.FOUND;
 
-public class ApplicationTests extends AbstractIntegrationTest {
+@TestPropertySource(properties = {"ixortalk.gateway.redirect-index-to: " + RedirectIndexToTest.CUSTOM_REDIRECT})
+public class RedirectIndexToTest extends AbstractIntegrationTest {
 
-	@Value("${security.oauth2.client.userAuthorizationUri}")
-	private String authorizeUri;
+    public static final String CUSTOM_REDIRECT = "/custom-redirect.html";
 
-	@Inject
+    @Inject
 	private TestRestTemplate template;
 
 	@Test
-	public void homePageLoads() {
+	public void getIndex() {
 		ResponseEntity<String> response = template.getForEntity("http://localhost:" + port + "/", String.class);
 
 		assertThat(response.getStatusCode()).isEqualTo(FOUND);
-		assertThat(response.getHeaders().getFirst(LOCATION)).isEqualTo("http://localhost:" + port + "/landing-page.html");
-	}
-
-	@Test
-	public void explicitIndexHtmlRequest() {
-		ResponseEntity<String> response = template.getForEntity("http://localhost:" + port + "/index.html", String.class);
-
-		assertThat(response.getStatusCode()).isEqualTo(FOUND);
-		assertThat(response.getHeaders().getFirst(LOCATION)).isEqualTo("http://localhost:" + port + "/landing-page.html");
-	}
-
-	@Test
-	public void userEndpointProtected() {
-		ResponseEntity<String> response = template.getForEntity("http://localhost:" + port + "/user", String.class);
-
-		assertThat(response.getStatusCode()).isEqualTo(FOUND);
-	}
-
-	@Test
-	public void resourceEndpointProtected() {
-		ResponseEntity<String> response = template.getForEntity("http://localhost:" + port + "/resource", String.class);
-
-		assertThat(response.getStatusCode()).isEqualTo(FOUND);
-	}
-
-	@Test
-	public void loginRedirects() {
-		ResponseEntity<String> response = template.getForEntity("http://localhost:" + port + "/login", String.class);
-
-		assertThat(response.getStatusCode()).isEqualTo(FOUND);
-
-		assertThat(response.getHeaders().getFirst(LOCATION))
-				.describedAs("Wrong location: " + response.getHeaders().getFirst(LOCATION))
-				.startsWith("http://localhost:" + port + authorizeUri);
+		assertThat(response.getHeaders().getFirst(LOCATION)).isEqualTo("http://localhost:" + port + "" + CUSTOM_REDIRECT);
 	}
 }
