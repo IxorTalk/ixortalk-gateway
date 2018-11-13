@@ -51,6 +51,14 @@ public class ApplicationTests extends AbstractIntegrationTest {
 	}
 
 	@Test
+	public void explicitIndexHtmlRequest() {
+		ResponseEntity<String> response = template.getForEntity("http://localhost:" + port + "/index.html", String.class);
+
+		assertThat(response.getStatusCode()).isEqualTo(FOUND);
+		assertThat(response.getHeaders().getFirst(LOCATION)).isEqualTo("http://localhost:" + port + "/landing-page.html");
+	}
+
+	@Test
 	public void userEndpointProtected() {
 		ResponseEntity<String> response = template.getForEntity("http://localhost:" + port + "/user", String.class);
 

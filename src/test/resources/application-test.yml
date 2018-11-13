@@ -58,7 +58,7 @@ ixortalk:
         image: assets/images/masterdata.png
         description: Met de asset mgmt module is het mogelijk om de verschillende type assets binnen het platform te managen.
   permit-all-paths:
-    /, /permitAll.html
+    /, /index.html, /permitAll.html
   role-matchers:
     asset-mgmt:
       hasAnyRole: ADMIN

@@ -36,7 +36,7 @@ public class IndexController {
     @Inject
     private IxorTalkProperties ixorTalkProperties;
 
-    @RequestMapping("/")
+    @RequestMapping({ "/index.html", "/" })
     public ModelAndView index() {
         return new ModelAndView("redirect:" + ixorTalkProperties.getGateway().getRedirectIndexTo());
     }
