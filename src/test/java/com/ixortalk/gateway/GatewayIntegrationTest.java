@@ -23,8 +23,10 @@
  */
 package com.ixortalk.gateway;
 
+import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import com.ixortalk.gateway.security.IxorTalkProperties;
+import org.apache.http.HttpStatus;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -34,22 +36,19 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletResponse;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
-import static com.github.tomakehurst.wiremock.client.WireMock.get;
-import static com.github.tomakehurst.wiremock.client.WireMock.post;
-import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static org.apache.http.HttpStatus.SC_CREATED;
-import static org.apache.http.HttpStatus.SC_OK;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.endsWith;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 
-public class GatewaySecurityIntegrationTest extends AbstractIntegrationTest {
+public class GatewayIntegrationTest extends AbstractIntegrationTest {
 
     private static final String EXPECTED_RESPONSE = "expectedResponse";
 
@@ -71,10 +70,10 @@ public class GatewaySecurityIntegrationTest extends AbstractIntegrationTest {
 
     @Test
     public void permitAll() throws Exception {
-        stubFor(get(urlEqualTo("/permit-all-module")).willReturn(
+        stubFor(WireMock.get(urlEqualTo("/permit-all-module")).willReturn(
                 aResponse()
                         .withBody(EXPECTED_RESPONSE)
-                        .withStatus(SC_OK)));
+                        .withStatus(HttpStatus.SC_OK)));
 
         mockMvc.perform(get("/permit-all-module")).andExpect(status().isOk()).andExpect(content().string(EXPECTED_RESPONSE));
     }
@@ -82,10 +81,10 @@ public class GatewaySecurityIntegrationTest extends AbstractIntegrationTest {
     @Test
     @WithMockUser(roles = { "ADMIN" })
     public void hasAnyRole_userHasRequiredRole() throws Exception {
-        stubFor(get(urlEqualTo("/has-any-role-module")).willReturn(
+        stubFor(WireMock.get(urlEqualTo("/has-any-role-module")).willReturn(
                 aResponse()
                         .withBody(EXPECTED_RESPONSE)
-                        .withStatus(SC_OK)));
+                        .withStatus(HttpStatus.SC_OK)));
 
         mockMvc.perform(get("/has-any-role-module")).andExpect(status().isOk()).andExpect(content().string(EXPECTED_RESPONSE));
     }
@@ -93,10 +92,10 @@ public class GatewaySecurityIntegrationTest extends AbstractIntegrationTest {
     @Test
     @WithMockUser
     public void hasAnyRole_userDoesNotHaveRequiredRole() throws Exception {
-        stubFor(get(urlEqualTo("/has-any-role-module")).willReturn(
+        stubFor(WireMock.get(urlEqualTo("/has-any-role-module")).willReturn(
                 aResponse()
                         .withBody(EXPECTED_RESPONSE)
-                        .withStatus(SC_OK)));
+                        .withStatus(HttpStatus.SC_OK)));
 
 
         mockMvc.perform(get("/has-any-role-module")).andExpect(status().isForbidden());
@@ -131,5 +130,17 @@ public class GatewaySecurityIntegrationTest extends AbstractIntegrationTest {
     @WithMockUser
     public void getLandingPage_noAccessToModule() throws Exception {
         mockMvc.perform(get("/landing-page.html")).andExpect(status().isOk()).andExpect(content().string(containsString(ixorTalkProperties.getGateway().getNoModulesText())));
+    }
+
+    @Test
+    public void routeToIndexStripsPath() throws Exception {
+        String body = "Body for index.html on the root path";
+        stubFor(WireMock.get(urlEqualTo("/index.html"))
+                .willReturn(
+                        aResponse()
+                                .withStatus(HttpServletResponse.SC_OK)
+                                .withBody(body)));
+
+        mockMvc.perform(get("/route-to-index-path/whatever/long/path")).andExpect(status().isOk()).andExpect(content().string(body));
     }
 }

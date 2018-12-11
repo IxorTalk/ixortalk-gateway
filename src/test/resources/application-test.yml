@@ -33,6 +33,9 @@ zuul:
     csrf-disabled-module:
       path: /csrf-disabled-module/**
       url: http://localhost:65433/csrf-disabled-module
+    route-to-index:
+      path: /route-to-index-path/**
+      url: http://localhost:65433/index.html
 
 security:
   oauth2:
@@ -69,3 +72,5 @@ ixortalk:
     csrf-disabled-module:
       permitAll: true
       csrf-enabled: false
+    route-to-index:
+      permitAll: true
