@@ -22,7 +22,7 @@
 # SOFTWARE.
 #
 
-FROM frolvlad/alpine-oraclejdk8:slim
+FROM openjdk:8u181-jdk
 ADD ixortalk-gateway-*.jar /app.jar
 ADD healthcheck.sh /
 RUN sh -c 'touch /app.jar' && chmod +x /healthcheck.sh
