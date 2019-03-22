@@ -48,6 +48,8 @@ security:
       userInfoUri: http://localhost:8888/uaa/user
 
 ixortalk:
+  logout:
+    redirect-uri-param-name: redirect_uri
   gateway:
     title: IxorTalk Portal
     copyright: (c) Ixor 2016. All rights reserved.

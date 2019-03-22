@@ -24,6 +24,7 @@
 package com.ixortalk.gateway.security;
 
 import java.io.IOException;
+import java.util.Objects;
 import java.util.regex.Pattern;
 
 import javax.inject.Inject;
@@ -44,6 +45,8 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.web.configurers.ExpressionUrlAuthorizationConfigurer;
 import org.springframework.security.oauth2.client.filter.OAuth2ClientContextFilter;
+import org.springframework.security.web.DefaultRedirectStrategy;
+import org.springframework.security.web.authentication.logout.SimpleUrlLogoutSuccessHandler;
 import org.springframework.security.web.csrf.CsrfFilter;
 import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.security.web.csrf.CsrfTokenRepository;
@@ -91,6 +94,12 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         authorizeRequests = authorizeHasAnyRoleRoutes(authorizeRequests);
         authorizeRequests = authorizePermitAllRoutes(authorizeRequests);
 
+        SimpleUrlLogoutSuccessHandler logoutSuccessHandler =  new SimpleUrlLogoutSuccessHandler();
+        logoutSuccessHandler.setDefaultTargetUrl(ixorTalkProperties.getLogout().getDefaultRedirectUri());
+
+        if (!Objects.isNull(ixorTalkProperties.getLogout().getRedirectUriParamName()))
+            logoutSuccessHandler.setRedirectStrategy(new RedirectStrategyDecorator(ixorTalkProperties.getLogout().getRedirectUriParamName(), new DefaultRedirectStrategy()));
+
         authorizeRequests
                 .anyRequest().authenticated()
                 .and()
@@ -108,7 +117,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .addFilterAfter(csrfHeaderFilter(), CsrfFilter.class)
                 .logout()
                 .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
-                .logoutSuccessUrl("/uaa/signout");
+                .logoutSuccessHandler(logoutSuccessHandler);
     }
 
     private ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry authorizePermitAllRoutes(ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry authorizeRequests) {

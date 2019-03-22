@@ -40,6 +40,12 @@ public class IxorTalkProperties {
 
     private Gateway gateway;
 
+    private Logout logout = new Logout();
+
+    public Logout getLogout() {
+        return logout;
+    }
+
     public Set<String> getPermitAllPaths() {
         return permitAllPaths;
     }
@@ -206,6 +212,28 @@ public class IxorTalkProperties {
         public Module setDescription(String description) {
             this.description = description;
             return this;
+        }
+    }
+
+    public static class Logout {
+
+        private String defaultRedirectUri = "/uaa/signout";
+        private String redirectUriParamName;
+
+        public void setDefaultRedirectUri(String defaultRedirectUri) {
+            this.defaultRedirectUri = defaultRedirectUri;
+        }
+
+        public String getDefaultRedirectUri() {
+            return defaultRedirectUri;
+        }
+
+        public String getRedirectUriParamName() {
+            return redirectUriParamName;
+        }
+
+        public void setRedirectUriParamName(String redirectUriParamName) {
+            this.redirectUriParamName = redirectUriParamName;
         }
     }
 }
