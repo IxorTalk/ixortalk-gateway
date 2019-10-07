@@ -175,8 +175,9 @@
 			<artifactId>spring-cloud-starter-config</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.springframework.security.oauth</groupId>
-			<artifactId>spring-security-oauth2</artifactId>
+			<groupId>com.ixortalk</groupId>
+			<artifactId>ixortalk-oauth2-spring-boot-starter</artifactId>
+			<version>${ixortalk-oauth2-spring-boot-starter.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
@@ -245,6 +246,7 @@
 		<wro4j.version>1.7.6</wro4j.version>
 		<java.version>1.8</java.version>
 		<prometheus.simpleclient.version>0.0.22</prometheus.simpleclient.version>
+		<ixortalk-oauth2-spring-boot-starter.version>0.0.4</ixortalk-oauth2-spring-boot-starter.version>
 	</properties>
 
 	<build>
