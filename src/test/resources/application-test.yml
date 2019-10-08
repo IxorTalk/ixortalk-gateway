@@ -76,3 +76,7 @@ ixortalk:
       csrf-enabled: false
     route-to-index:
       permitAll: true
+
+  oauth2:
+    resource-server:
+      enabled: false
