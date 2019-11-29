@@ -246,7 +246,7 @@
 		<wro4j.version>1.7.6</wro4j.version>
 		<java.version>1.8</java.version>
 		<prometheus.simpleclient.version>0.0.22</prometheus.simpleclient.version>
-		<ixortalk-oauth2-spring-boot-starter.version>0.0.6</ixortalk-oauth2-spring-boot-starter.version>
+		<ixortalk-oauth2-spring-boot-starter.version>0.0.13</ixortalk-oauth2-spring-boot-starter.version>
 	</properties>
 
 	<build>
