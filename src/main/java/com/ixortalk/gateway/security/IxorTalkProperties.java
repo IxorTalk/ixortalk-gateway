@@ -25,9 +25,11 @@ package com.ixortalk.gateway.security;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Maps.newHashMap;
 import static com.google.common.collect.Sets.newHashSet;
 
@@ -42,8 +44,14 @@ public class IxorTalkProperties {
 
     private Logout logout = new Logout();
 
+    private Authorize authorize = new Authorize();
+
     public Logout getLogout() {
         return logout;
+    }
+
+    public Authorize getAuthorize() {
+        return authorize;
     }
 
     public Set<String> getPermitAllPaths() {
@@ -234,6 +242,15 @@ public class IxorTalkProperties {
 
         public void setRedirectUriParamName(String redirectUriParamName) {
             this.redirectUriParamName = redirectUriParamName;
+        }
+    }
+
+    public static class Authorize {
+
+        private List<String> forwardParams = newArrayList();
+
+        public List<String> getForwardParams() {
+            return forwardParams;
         }
     }
 }

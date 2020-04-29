@@ -23,6 +23,9 @@
  */
 package com.ixortalk.gateway;
 
+import com.jayway.restassured.RestAssured;
+import com.jayway.restassured.filter.session.SessionFilter;
+import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.springframework.boot.context.embedded.LocalServerPort;
@@ -31,6 +34,8 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.rules.SpringClassRule;
 import org.springframework.test.context.junit4.rules.SpringMethodRule;
 
+import static com.jayway.restassured.config.RedirectConfig.redirectConfig;
+import static com.jayway.restassured.config.RestAssuredConfig.config;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
 @SpringBootTest(classes = GatewayApplication.class, webEnvironment = RANDOM_PORT)
@@ -46,4 +51,13 @@ public abstract class AbstractIntegrationTest {
     @LocalServerPort
     protected int port;
 
+    protected SessionFilter sessionFilter;
+
+    @Before
+    public void restAssured() {
+        RestAssured.port = port;
+        RestAssured.config = config().redirect(redirectConfig().followRedirects(false));
+
+        this.sessionFilter = new SessionFilter();
+    }
 }

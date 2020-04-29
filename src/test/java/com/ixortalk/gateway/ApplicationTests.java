@@ -29,57 +29,99 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.ResponseEntity;
 
 import javax.inject.Inject;
+import java.net.URI;
+import java.net.URISyntaxException;
 
+import static com.ixortalk.test.util.Randomizer.nextString;
+import static com.jayway.restassured.RestAssured.given;
+import static javax.servlet.http.HttpServletResponse.SC_FOUND;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpHeaders.LOCATION;
 import static org.springframework.http.HttpStatus.FOUND;
 
 public class ApplicationTests extends AbstractIntegrationTest {
 
-	@Value("${security.oauth2.client.userAuthorizationUri}")
-	private String authorizeUri;
+    public static final String AUTH_FORWARD_PARAM_VALUE = nextString("authForwardParam");
+    public static final String OTHER_AUTH_FORWARD_PARAM_VALUE = nextString("otherAuthForwardParam");
+    public static final String NOT_TO_FORWARD = nextString("notToForward");
+    public static final String CONFIGURED_AUTH_FORWARD_PARAM = "authForwardParam";
+    public static final String CONFIGURED_OTHER_AUTH_FORWARD_PARAM = "otherAuthForwardParam";
+    public static final String OTHER_PARAM = "otherParam";
+    @Value("${security.oauth2.client.userAuthorizationUri}")
+    private String authorizeUri;
 
-	@Inject
-	private TestRestTemplate template;
+    @Inject
+    private TestRestTemplate template;
 
-	@Test
-	public void homePageLoads() {
-		ResponseEntity<String> response = template.getForEntity("http://localhost:" + port + "/", String.class);
+    @Test
+    public void homePageLoads() {
+        ResponseEntity<String> response = template.getForEntity("http://localhost:" + port + "/", String.class);
 
-		assertThat(response.getStatusCode()).isEqualTo(FOUND);
-		assertThat(response.getHeaders().getFirst(LOCATION)).isEqualTo("http://localhost:" + port + "/landing-page.html");
-	}
+        assertThat(response.getStatusCode()).isEqualTo(FOUND);
+        assertThat(response.getHeaders().getFirst(LOCATION)).isEqualTo("http://localhost:" + port + "/landing-page.html");
+    }
 
-	@Test
-	public void explicitIndexHtmlRequest() {
-		ResponseEntity<String> response = template.getForEntity("http://localhost:" + port + "/index.html", String.class);
+    @Test
+    public void explicitIndexHtmlRequest() {
+        ResponseEntity<String> response = template.getForEntity("http://localhost:" + port + "/index.html", String.class);
 
-		assertThat(response.getStatusCode()).isEqualTo(FOUND);
-		assertThat(response.getHeaders().getFirst(LOCATION)).isEqualTo("http://localhost:" + port + "/landing-page.html");
-	}
+        assertThat(response.getStatusCode()).isEqualTo(FOUND);
+        assertThat(response.getHeaders().getFirst(LOCATION)).isEqualTo("http://localhost:" + port + "/landing-page.html");
+    }
 
-	@Test
-	public void userEndpointProtected() {
-		ResponseEntity<String> response = template.getForEntity("http://localhost:" + port + "/user", String.class);
+    @Test
+    public void userEndpointProtected() {
+        ResponseEntity<String> response = template.getForEntity("http://localhost:" + port + "/user", String.class);
 
-		assertThat(response.getStatusCode()).isEqualTo(FOUND);
-	}
+        assertThat(response.getStatusCode()).isEqualTo(FOUND);
+    }
 
-	@Test
-	public void resourceEndpointProtected() {
-		ResponseEntity<String> response = template.getForEntity("http://localhost:" + port + "/resource", String.class);
+    @Test
+    public void resourceEndpointProtected() {
+        ResponseEntity<String> response = template.getForEntity("http://localhost:" + port + "/resource", String.class);
 
-		assertThat(response.getStatusCode()).isEqualTo(FOUND);
-	}
+        assertThat(response.getStatusCode()).isEqualTo(FOUND);
+    }
 
-	@Test
-	public void loginRedirects() {
-		ResponseEntity<String> response = template.getForEntity("http://localhost:" + port + "/login", String.class);
+    @Test
+    public void loginRedirects() {
+        ResponseEntity<String> response = template.getForEntity("http://localhost:" + port + "/login", String.class);
 
-		assertThat(response.getStatusCode()).isEqualTo(FOUND);
+        assertThat(response.getStatusCode()).isEqualTo(FOUND);
 
-		assertThat(response.getHeaders().getFirst(LOCATION))
-				.describedAs("Wrong location: " + response.getHeaders().getFirst(LOCATION))
-				.startsWith("http://localhost:" + port + authorizeUri);
-	}
+        assertThat(response.getHeaders().getFirst(LOCATION))
+                .describedAs("Wrong location: " + response.getHeaders().getFirst(LOCATION))
+                .startsWith("http://localhost:" + port + authorizeUri);
+    }
+
+    @Test
+    public void additionalAuthorizationParams() throws URISyntaxException {
+
+        String login =
+                given()
+                        .filter(this.sessionFilter)
+                        .when()
+                        .param(CONFIGURED_AUTH_FORWARD_PARAM, AUTH_FORWARD_PARAM_VALUE)
+                        .param(CONFIGURED_OTHER_AUTH_FORWARD_PARAM, OTHER_AUTH_FORWARD_PARAM_VALUE)
+                        .param(OTHER_PARAM, NOT_TO_FORWARD)
+                        .get("/secured.html")
+                        .then()
+                        .statusCode(SC_FOUND)
+                        .header(LOCATION, "http://localhost:" + port + "/login")
+                        .extract().header(LOCATION);
+
+        String authorizationUri =
+                given()
+                        .filter(this.sessionFilter)
+                        .when()
+                        .get(login)
+                        .then()
+                        .statusCode(SC_FOUND)
+                        .extract().header(LOCATION);
+
+        assertThat(new URI(authorizationUri))
+                .hasParameter(CONFIGURED_AUTH_FORWARD_PARAM, AUTH_FORWARD_PARAM_VALUE)
+                .hasParameter(CONFIGURED_OTHER_AUTH_FORWARD_PARAM, OTHER_AUTH_FORWARD_PARAM_VALUE)
+                .hasNoParameter(OTHER_PARAM);
+    }
 }
