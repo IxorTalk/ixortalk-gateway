@@ -77,6 +77,15 @@ ixortalk:
     route-to-index:
       permitAll: true
 
+  authorize:
+    forward-params:
+      - authForwardParam
+      - otherAuthForwardParam
+
   oauth2:
     resource-server:
       enabled: false
+
+server:
+  session:
+    tracking-modes: cookie

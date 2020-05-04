@@ -23,18 +23,6 @@
  */
 package com.ixortalk.gateway.security;
 
-import java.io.IOException;
-import java.util.Objects;
-import java.util.regex.Pattern;
-
-import javax.inject.Inject;
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.springframework.boot.autoconfigure.security.oauth2.client.EnableOAuth2Sso;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.cloud.netflix.zuul.filters.ZuulProperties;
@@ -51,10 +39,22 @@ import org.springframework.security.web.csrf.CsrfFilter;
 import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.security.web.csrf.CsrfTokenRepository;
 import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
+import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.util.WebUtils;
+
+import javax.inject.Inject;
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.Objects;
+import java.util.regex.Pattern;
 
 import static java.util.Arrays.stream;
 
@@ -72,8 +72,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Bean
     @Primary
-    public OAuth2ClientContextFilter dynamicOauth2ClientContextFilter() {
-        return new DynamicOauth2ClientContextFilter();
+    public OAuth2ClientContextFilter forwardParamsOAuth2ClientContextFilter() {
+        return new ForwardParamsOAuth2ClientContextFilter(new HttpSessionRequestCache(), ixorTalkProperties.getAuthorize().getForwardParams());
     }
 
     @Override
