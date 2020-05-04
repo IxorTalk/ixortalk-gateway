@@ -29,7 +29,7 @@
 
 	<groupId>com.ixortalk</groupId>
 	<artifactId>ixortalk-gateway</artifactId>
-	<version>1.0.10-SNAPSHOT</version>
+	<version>1.0.10</version>
 	<packaging>jar</packaging>
 
 	<parent>
@@ -79,7 +79,7 @@
 		<connection>scm:git:git@github.com:ixortalk/ixortalk-gateway.git</connection>
 		<developerConnection>scm:git:git@github.com:ixortalk/ixortalk-gateway.git</developerConnection>
 		<url>https://github.com/ixortalk/ixortalk-gateway/tree/master</url>
-		<tag>HEAD</tag>
+		<tag>ixortalk-gateway-1.0.10</tag>
 	</scm>
 
 	<distributionManagement>
