@@ -37,6 +37,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+import static org.apache.commons.lang3.ArrayUtils.isNotEmpty;
+
 /**
  * When upgrading to Spring Security 5 this can be replaced by a org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequestResolver
  */
@@ -46,10 +48,12 @@ class ForwardParamsOAuth2ClientContextFilter extends OAuth2ClientContextFilter {
 
     private final RequestCache requestCache;
 
+    private String forwardNamespace;
     private final List<String> forwardParams;
 
-    public ForwardParamsOAuth2ClientContextFilter(RequestCache requestCache, List<String> forwardParams) {
+    public ForwardParamsOAuth2ClientContextFilter(RequestCache requestCache, String forwardNamespace, List<String> forwardParams) {
         this.requestCache = requestCache;
+        this.forwardNamespace = forwardNamespace;
         this.forwardParams = forwardParams;
     }
 
@@ -70,7 +74,10 @@ class ForwardParamsOAuth2ClientContextFilter extends OAuth2ClientContextFilter {
 
         SavedRequest savedRequest = requestCache.getRequest(request, response);
         if (savedRequest != null) {
-            this.forwardParams.forEach(forwardParam -> builder.queryParam(forwardParam, savedRequest.getParameterValues(forwardParam)));
+            this.forwardParams
+                    .stream()
+                    .filter(forwardParam -> isNotEmpty(savedRequest.getParameterValues(forwardParam)))
+                    .forEach(forwardParam -> builder.queryParam(forwardNamespace + "_" + forwardParam, savedRequest.getParameterValues(forwardParam)));
         }
 
         this.redirectStrategy.sendRedirect(request, response, builder.build().encode().toUriString());
