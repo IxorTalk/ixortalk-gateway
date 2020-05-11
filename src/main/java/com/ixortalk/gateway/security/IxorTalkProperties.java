@@ -247,10 +247,31 @@ public class IxorTalkProperties {
 
     public static class Authorize {
 
-        private List<String> forwardParams = newArrayList();
+        private Forward forward = new Forward();
 
-        public List<String> getForwardParams() {
-            return forwardParams;
+        public Forward getForward() {
+            return forward;
+        }
+
+        public static class Forward {
+
+            private String namespace = "ixortalk_com";
+
+            private List<String> params = newArrayList();
+
+            public String getNamespace() {
+                return namespace;
+            }
+
+            public void setNamespace(String namespace) {
+                this.namespace = namespace;
+            }
+
+            public List<String> getParams() {
+                return params;
+            }
         }
     }
+
+
 }

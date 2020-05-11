@@ -73,7 +73,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Bean
     @Primary
     public OAuth2ClientContextFilter forwardParamsOAuth2ClientContextFilter() {
-        return new ForwardParamsOAuth2ClientContextFilter(new HttpSessionRequestCache(), ixorTalkProperties.getAuthorize().getForwardParams());
+        return new ForwardParamsOAuth2ClientContextFilter(new HttpSessionRequestCache(), ixorTalkProperties.getAuthorize().getForward().getNamespace(), ixorTalkProperties.getAuthorize().getForward().getParams());
     }
 
     @Override

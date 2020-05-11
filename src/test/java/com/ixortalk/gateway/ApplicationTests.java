@@ -44,9 +44,13 @@ public class ApplicationTests extends AbstractIntegrationTest {
     public static final String AUTH_FORWARD_PARAM_VALUE = nextString("authForwardParam");
     public static final String OTHER_AUTH_FORWARD_PARAM_VALUE = nextString("otherAuthForwardParam");
     public static final String NOT_TO_FORWARD = nextString("notToForward");
+
+    public static final String CONFIGURED_AUTH_FORWARD_NAMESPACE = "test_ixortalk_com";
     public static final String CONFIGURED_AUTH_FORWARD_PARAM = "authForwardParam";
     public static final String CONFIGURED_OTHER_AUTH_FORWARD_PARAM = "otherAuthForwardParam";
+
     public static final String OTHER_PARAM = "otherParam";
+
     @Value("${security.oauth2.client.userAuthorizationUri}")
     private String authorizeUri;
 
@@ -120,8 +124,38 @@ public class ApplicationTests extends AbstractIntegrationTest {
                         .extract().header(LOCATION);
 
         assertThat(new URI(authorizationUri))
-                .hasParameter(CONFIGURED_AUTH_FORWARD_PARAM, AUTH_FORWARD_PARAM_VALUE)
-                .hasParameter(CONFIGURED_OTHER_AUTH_FORWARD_PARAM, OTHER_AUTH_FORWARD_PARAM_VALUE)
+                .hasParameter(CONFIGURED_AUTH_FORWARD_NAMESPACE + "_" + CONFIGURED_AUTH_FORWARD_PARAM, AUTH_FORWARD_PARAM_VALUE)
+                .hasParameter(CONFIGURED_AUTH_FORWARD_NAMESPACE + "_" + CONFIGURED_OTHER_AUTH_FORWARD_PARAM, OTHER_AUTH_FORWARD_PARAM_VALUE)
+                .hasNoParameter(OTHER_PARAM);
+    }
+
+    @Test
+    public void additionalAuthorizationParams_NotPresent() throws URISyntaxException {
+
+        String login =
+                given()
+                        .filter(this.sessionFilter)
+                        .when()
+                        .param(CONFIGURED_OTHER_AUTH_FORWARD_PARAM, OTHER_AUTH_FORWARD_PARAM_VALUE)
+                        .param(OTHER_PARAM, NOT_TO_FORWARD)
+                        .get("/secured.html")
+                        .then()
+                        .statusCode(SC_FOUND)
+                        .header(LOCATION, "http://localhost:" + port + "/login")
+                        .extract().header(LOCATION);
+
+        String authorizationUri =
+                given()
+                        .filter(this.sessionFilter)
+                        .when()
+                        .get(login)
+                        .then()
+                        .statusCode(SC_FOUND)
+                        .extract().header(LOCATION);
+
+        assertThat(new URI(authorizationUri))
+                .hasNoParameter(CONFIGURED_AUTH_FORWARD_NAMESPACE + "_" + CONFIGURED_AUTH_FORWARD_PARAM)
+                .hasParameter(CONFIGURED_AUTH_FORWARD_NAMESPACE + "_" + CONFIGURED_OTHER_AUTH_FORWARD_PARAM, OTHER_AUTH_FORWARD_PARAM_VALUE)
                 .hasNoParameter(OTHER_PARAM);
     }
 }
