@@ -40,6 +40,7 @@ import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.security.web.csrf.CsrfTokenRepository;
 import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
+import org.springframework.security.web.util.matcher.AndRequestMatcher;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -57,6 +58,7 @@ import java.util.Objects;
 import java.util.regex.Pattern;
 
 import static java.util.Arrays.stream;
+import static org.apache.commons.lang3.ArrayUtils.isEmpty;
 
 @Configuration
 @EnableOAuth2Sso
@@ -94,7 +96,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         authorizeRequests = authorizeHasAnyRoleRoutes(authorizeRequests);
         authorizeRequests = authorizePermitAllRoutes(authorizeRequests);
 
-        SimpleUrlLogoutSuccessHandler logoutSuccessHandler =  new SimpleUrlLogoutSuccessHandler();
+        SimpleUrlLogoutSuccessHandler logoutSuccessHandler = new SimpleUrlLogoutSuccessHandler();
         logoutSuccessHandler.setDefaultTargetUrl(ixorTalkProperties.getLogout().getDefaultRedirectUri());
 
         if (!Objects.isNull(ixorTalkProperties.getLogout().getRedirectUriParamName()))
@@ -145,22 +147,25 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     }
 
     private RequestMatcher csrfRequestMatcher() {
-        return new RequestMatcher() {
-            // Always allow the HTTP GET method
-            private final Pattern allowedMethods = Pattern.compile("^(GET|HEAD|OPTIONS|TRACE)$");
+        return new AndRequestMatcher(
+                request -> !isEmpty(request.getCookies()),
+                new RequestMatcher() {
+                    // Always allow the HTTP GET method
+                    private final Pattern allowedMethods = Pattern.compile("^(GET|HEAD|OPTIONS|TRACE)$");
 
-            // Disable CSRF protection on the following urls:
-            private final AntPathRequestMatcher[] requestMatchers = {new AntPathRequestMatcher("/uaa/**")};
+                    // Disable CSRF protection on the following urls:
+                    private final AntPathRequestMatcher[] requestMatchers = {new AntPathRequestMatcher("/uaa/**")};
 
-            @Override
-            public boolean matches(HttpServletRequest request) {
-                if (allowedMethods.matcher(request.getMethod()).matches()) {
-                    return false;
+                    @Override
+                    public boolean matches(HttpServletRequest request) {
+                        if (allowedMethods.matcher(request.getMethod()).matches()) {
+                            return false;
+                        }
+
+                        return stream(requestMatchers).noneMatch(matcher -> matcher.matches(request));
+                    }
                 }
-
-                return stream(requestMatchers).noneMatch(matcher -> matcher.matches(request));
-            }
-        };
+        );
     }
 
     private Filter csrfHeaderFilter() {

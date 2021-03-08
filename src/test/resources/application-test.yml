@@ -36,6 +36,9 @@ zuul:
     route-to-index:
       path: /route-to-index-path/**
       url: http://localhost:65433/index.html
+    api-service:
+      path: /api/**
+      url: http://localhost:65433/api
 
 security:
   oauth2:
@@ -75,6 +78,8 @@ ixortalk:
       permitAll: true
       csrf-enabled: false
     route-to-index:
+      permitAll: true
+    api-service:
       permitAll: true
 
   authorize:
