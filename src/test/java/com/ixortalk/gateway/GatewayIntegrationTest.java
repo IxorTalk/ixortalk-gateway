@@ -36,15 +36,21 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import javax.inject.Inject;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.*;
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.ok;
+import static com.github.tomakehurst.wiremock.client.WireMock.post;
+import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static org.apache.http.HttpStatus.SC_CREATED;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.endsWith;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 
@@ -142,5 +148,19 @@ public class GatewayIntegrationTest extends AbstractIntegrationTest {
                                 .withBody(body)));
 
         mockMvc.perform(get("/route-to-index-path/whatever/long/path")).andExpect(status().isOk()).andExpect(content().string(body));
+    }
+
+    @Test
+    public void csrf_noCookies() throws Exception {
+        stubFor(post(urlEqualTo("/api")).willReturn(ok(EXPECTED_RESPONSE)));
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/api")).andExpect(status().isOk()).andExpect(content().string(EXPECTED_RESPONSE));
+    }
+
+    @Test
+    public void csrf_cookies() throws Exception {
+        stubFor(post(urlEqualTo("/api")).willReturn(ok("not expected to receive this")));
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/api").cookie(new Cookie("JSESSIONID", "invalid"))).andExpect(status().isForbidden());
     }
 }
